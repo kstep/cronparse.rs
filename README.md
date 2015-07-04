@@ -2,6 +2,10 @@
 
 Alpha version
 
+[Documentation][1]
+
+[1]: http://kstep.me/cronparse.rs/cronparse/index.html
+
 Usage:
 
 ```toml
