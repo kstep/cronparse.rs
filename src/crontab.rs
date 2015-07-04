@@ -84,6 +84,15 @@ impl CrontabEntry {
             _ => None
         }
     }
+
+    pub fn command<'a>(&'a self) -> Option<&'a str> {
+        match *self {
+            CrontabEntry::User(UserCrontabEntry { ref cmd, .. }) => Some(&**cmd),
+            CrontabEntry::System(SystemCrontabEntry { ref cmd, .. }) => Some(&**cmd),
+            CrontabEntry::Anacron(AnacrontabEntry { ref cmd, .. }) => Some(&**cmd),
+            _ => None
+        }
+    }
 }
 
 impl FromStr for EnvVarEntry {

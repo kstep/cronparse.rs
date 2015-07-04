@@ -1,7 +1,7 @@
 [package]
 name = "cronparse"
 description = "Crontab files parser"
-version = "0.1.2"
+version = "0.2.0"
 authors = ["Konstantin Stepanov <me@kstep.me>"]
 readme = "README.md"
 repository = "https://github.com/kstep/cronparse.rs.git"
