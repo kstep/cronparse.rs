@@ -197,9 +197,23 @@ impl<T: Limited> Iterator for IntervalIter<T> {
     }
 }
 
-impl<T: Limited + FromStr> FromStr for Intervals<T>
-where T: Limited, T: FromStr, IntervalParseError: From<<T as FromStr>::Err>
-{
+impl<T: Limited + Display> Display for Intervals<T> {
+    fn fmt(&self, f: &mut Formatter) -> fmt::Result {
+        let mut first = true;
+        for item in &self.0 {
+            if first {
+                first = false;
+            } else {
+                try!(f.write_str(","));
+            }
+
+            try!(item.fmt(f));
+        }
+        Ok(())
+    }
+}
+
+impl<T: Limited + FromStr> FromStr for Intervals<T> where IntervalParseError: From<<T as FromStr>::Err> {
     type Err = IntervalParseError;
     fn from_str(s: &str) -> Result<Intervals<T>, IntervalParseError> {
         s.split(',').map(|v| v.parse::<Interval<T>>()).collect::<Result<Vec<_>, _>>().map(Intervals)

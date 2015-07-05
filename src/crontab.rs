@@ -67,6 +67,17 @@ impl ToCrontabEntry for EnvVarEntry {
     }
 }
 
+impl Display for CrontabEntry {
+    fn fmt(&self, f: &mut Formatter) -> fmt::Result {
+        match *self {
+            CrontabEntry::EnvVar(ref entry) => entry.fmt(f),
+            CrontabEntry::Anacron(ref entry) => entry.fmt(f),
+            CrontabEntry::User(ref entry) => entry.fmt(f),
+            CrontabEntry::System(ref entry) => entry.fmt(f),
+        }
+    }
+}
+
 impl CrontabEntry {
     pub fn period<'a>(&'a self) -> Option<&'a Period> {
         match *self {
@@ -106,6 +117,12 @@ impl CrontabEntry {
             CrontabEntry::System(SystemCrontabEntry { user: UserInfo(_, Some(ref group), _), .. }) => Some(&**group),
             _ => None
         }
+    }
+}
+
+impl Display for EnvVarEntry {
+    fn fmt(&self, f: &mut Formatter) -> fmt::Result {
+        write!(f, "{}={}", self.0, self.1)
     }
 }
 
@@ -149,6 +166,22 @@ pub struct UserInfo(pub String, pub Option<String>, pub Option<String>);
 
 #[derive(Debug, PartialEq)]
 pub struct UserInfoParseError;
+
+impl Display for UserInfo {
+    fn fmt(&self, f: &mut Formatter) -> fmt::Result {
+        try!(self.0.fmt(f));
+        if let Some(ref group) = self.1 {
+            try!(f.write_str(":"));
+            try!(group.fmt(f));
+        }
+        if let Some(ref class) = self.2 {
+            try!(f.write_str(":"));
+            try!(class.fmt(f));
+        }
+        Ok(())
+    }
+}
+
 impl FromStr for UserInfo {
     type Err = UserInfoParseError;
     fn from_str(s: &str) -> Result<UserInfo, UserInfoParseError> {
@@ -231,6 +264,12 @@ impl Error for CrontabEntryParseError {
     }
 }
 
+impl Display for UserCrontabEntry {
+    fn fmt(&self, f: &mut Formatter) -> fmt::Result {
+        write!(f, "{} {}", self.sched, self.cmd)
+    }
+}
+
 impl FromStr for UserCrontabEntry {
     type Err = CrontabEntryParseError;
 
@@ -241,6 +280,12 @@ impl FromStr for UserCrontabEntry {
             sched: try!(Schedule::from_iter(&mut splits)),
             cmd: splits.collect::<Vec<&str>>().connect(" ")
         })
+    }
+}
+
+impl Display for SystemCrontabEntry {
+    fn fmt(&self, f: &mut Formatter) -> fmt::Result {
+        write!(f, "{} {} {}", self.sched, self.user, self.cmd)
     }
 }
 
@@ -255,6 +300,12 @@ impl FromStr for SystemCrontabEntry {
             user: try!(splits.next().ok_or(UserInfoParseError).and_then(FromStr::from_str)),
             cmd: splits.collect::<Vec<&str>>().connect(" ")
         })
+    }
+}
+
+impl Display for AnacrontabEntry {
+    fn fmt(&self, f: &mut Formatter) -> fmt::Result {
+        write!(f, "@{} {} {} {}", self.period, self.delay, self.jobid, self.cmd)
     }
 }
 

@@ -114,6 +114,17 @@ impl Error for CalendarParseError {
     }
 }
 
+impl Display for Calendar {
+    fn fmt(&self, f: &mut Formatter) -> fmt::Result {
+        write!(f, "{} {} {} {} {}",
+               self.mins,
+               self.hrs,
+               self.days,
+               self.mons,
+               self.dows)
+    }
+}
+
 impl FromStr for Calendar {
     type Err = CalendarParseError;
     fn from_str(s: &str) -> Result<Calendar, CalendarParseError> {
@@ -166,6 +177,25 @@ impl Error for PeriodParseError {
         match *self {
             PeriodParseError::InvalidDays(ref e) => Some(e),
             PeriodParseError::UnknownPeriod => None
+        }
+    }
+}
+
+impl Display for Period {
+    fn fmt(&self, f: &mut Formatter) -> fmt::Result {
+        use self::Period::*;
+        match *self {
+            Reboot => f.write_str("@reboot"),
+            Minutely => f.write_str("@minutely"),
+            Hourly => f.write_str("@hourly"),
+            Midnight => f.write_str("@midnight"),
+            Daily => f.write_str("@daily"),
+            Weekly => f.write_str("@weekly"),
+            Monthly => f.write_str("@monthly"),
+            Quaterly => f.write_str("@quaterly"),
+            Biannually => f.write_str("@semi-annually"),
+            Yearly => f.write_str("@yearly"),
+            Days(d) => d.fmt(f),
         }
     }
 }
@@ -449,6 +479,15 @@ impl Display for ScheduleParseError {
             ScheduleParseError::InvalidPeriod(ref e) => e.fmt(f),
             ScheduleParseError::InvalidCalendar(ref e) => e.fmt(f),
             ScheduleParseError::MissingSchedule => f.write_str("missing schedule"),
+        }
+    }
+}
+
+impl Display for Schedule {
+    fn fmt(&self, f: &mut Formatter) -> fmt::Result {
+        match *self {
+            Schedule::Calendar(ref calendar) => calendar.fmt(f),
+            Schedule::Period(ref period) => period.fmt(f),
         }
     }
 }
