@@ -93,6 +93,20 @@ impl CrontabEntry {
             _ => None
         }
     }
+
+    pub fn user<'a>(&'a self) -> Option<&'a str> {
+        match *self {
+            CrontabEntry::System(SystemCrontabEntry { user: UserInfo(ref user, _, _), .. }) => Some(&**user),
+            _ => None
+        }
+    }
+
+    pub fn group<'a>(&'a self) -> Option<&'a str> {
+        match *self {
+            CrontabEntry::System(SystemCrontabEntry { user: UserInfo(_, Some(ref group), _), .. }) => Some(&**group),
+            _ => None
+        }
+    }
 }
 
 impl FromStr for EnvVarEntry {
