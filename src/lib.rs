@@ -110,7 +110,7 @@ impl<T: crontab::ToCrontabEntry> Iterator for CrontabFile<T> {
                         _ => line.parse::<T>().map_err(|e| {
                             let mut err: CrontabFileError = From::from(e);
                             err.lineno = lineno + 1;
-                            err.line = Some(line.to_string());
+                            err.line = Some(line.to_owned());
                             err
                         }).map(crontab::ToCrontabEntry::to_crontab_entry)
                     });

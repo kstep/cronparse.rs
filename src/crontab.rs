@@ -139,7 +139,7 @@ impl FromStr for EnvVarEntry {
             }
         }
 
-        Ok(EnvVarEntry(name.to_string(), value.to_string()))
+        Ok(EnvVarEntry(name.to_owned(), value.to_owned()))
     }
 }
 
@@ -154,9 +154,9 @@ impl FromStr for UserInfo {
     fn from_str(s: &str) -> Result<UserInfo, UserInfoParseError> {
         let mut splits = s.split(':');
         Ok(UserInfo(
-            try!(splits.next().ok_or(UserInfoParseError).map(ToString::to_string)),
-            splits.next().map(ToString::to_string),
-            splits.next().map(ToString::to_string)
+            try!(splits.next().ok_or(UserInfoParseError).map(ToOwned::to_owned)),
+            splits.next().map(ToOwned::to_owned),
+            splits.next().map(ToOwned::to_owned)
         ))
     }
 }
@@ -267,7 +267,7 @@ impl FromStr for AnacrontabEntry {
         Ok(AnacrontabEntry {
             period: try!(splits.next().map(|v| v.parse().map_err(CrontabEntryParseError::InvalidPeriod)).unwrap_or(Err(CrontabEntryParseError::MissingPeriod))),
             delay: try!(splits.next().map(|v| v.parse().map_err(CrontabEntryParseError::InvalidDelay)).unwrap_or(Err(CrontabEntryParseError::MissingDelay))),
-            jobid: try!(splits.next().map(ToString::to_string).ok_or(CrontabEntryParseError::MissingJobId)),
+            jobid: try!(splits.next().map(ToOwned::to_owned).ok_or(CrontabEntryParseError::MissingJobId)),
             cmd: splits.collect::<Vec<&str>>().connect(" ")
         })
     }
