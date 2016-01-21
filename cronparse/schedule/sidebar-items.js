@@ -1,0 +1,1 @@
+initSidebarItems({"enum":[["CalendarParseError",""],["DayOfWeek",""],["Month",""],["Period",""],["PeriodParseError",""],["Schedule",""],["ScheduleParseError",""]],"struct":[["Calendar",""],["Day",""],["DayOfWeekParseError",""],["Hour",""],["Minute",""],["MonthParseError",""]],"type":[["Days",""],["DaysOfWeek",""],["Hours",""],["Minutes",""],["Months",""]]});
