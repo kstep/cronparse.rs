@@ -274,7 +274,7 @@ impl FromStr for UserCrontabEntry {
         let mut splits = s.split(&seps[..]).filter(|v| *v != "");
         Ok(UserCrontabEntry {
             sched: try!(Schedule::from_iter(&mut splits)),
-            cmd: splits.collect::<Vec<&str>>().connect(" ")
+            cmd: splits.collect::<Vec<&str>>().join(" ")
         })
     }
 }
@@ -294,7 +294,7 @@ impl FromStr for SystemCrontabEntry {
         Ok(SystemCrontabEntry {
             sched: try!(Schedule::from_iter(&mut splits)),
             user: try!(splits.next().ok_or(UserInfoParseError).and_then(FromStr::from_str)),
-            cmd: splits.collect::<Vec<&str>>().connect(" ")
+            cmd: splits.collect::<Vec<&str>>().join(" ")
         })
     }
 }
@@ -315,7 +315,7 @@ impl FromStr for AnacrontabEntry {
             period: try!(splits.next().map(|v| v.parse().map_err(CrontabEntryParseError::InvalidPeriod)).unwrap_or(Err(CrontabEntryParseError::MissingPeriod))),
             delay: try!(splits.next().map(|v| v.parse().map_err(CrontabEntryParseError::InvalidDelay)).unwrap_or(Err(CrontabEntryParseError::MissingDelay))),
             jobid: try!(splits.next().map(ToOwned::to_owned).ok_or(CrontabEntryParseError::MissingJobId)),
-            cmd: splits.collect::<Vec<&str>>().connect(" ")
+            cmd: splits.collect::<Vec<&str>>().join(" ")
         })
     }
 }
