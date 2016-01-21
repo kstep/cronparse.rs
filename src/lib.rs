@@ -6,6 +6,7 @@ use std::error::Error;
 use std::convert::{AsRef, From};
 use std::path::Path;
 use std::fmt::{self, Display, Formatter};
+use std::str::FromStr;
 
 pub trait Limited: Add<u8, Output=Self> + Ord + Copy {
     fn min_value() -> Self;
@@ -16,12 +17,12 @@ pub mod schedule;
 pub mod interval;
 pub mod crontab;
 
-pub struct CrontabFile<T: crontab::ToCrontabEntry> {
+pub struct CrontabFile<T> {
     lines: Enumerate<Lines<BufReader<File>>>,
     _marker: std::marker::PhantomData<T>
 }
 
-impl<T: crontab::ToCrontabEntry> CrontabFile<T> {
+impl<T> CrontabFile<T> {
     pub fn new<P: AsRef<Path>>(path: P) -> io::Result<CrontabFile<T>> {
         File::open(path).map(CrontabFile::from_file)
     }
@@ -95,7 +96,11 @@ impl Display for CrontabFileError {
     }
 }
 
-impl<T: crontab::ToCrontabEntry> Iterator for CrontabFile<T> {
+impl<T> Iterator for CrontabFile<T>
+    where T: FromStr,
+          crontab::CrontabEntry: From<T>,
+          CrontabFileError: From<<T as FromStr>::Err>
+{
     type Item = Result<crontab::CrontabEntry, CrontabFileError>;
     fn next(&mut self) -> Option<Result<crontab::CrontabEntry, CrontabFileError>> {
         loop {
@@ -112,7 +117,7 @@ impl<T: crontab::ToCrontabEntry> Iterator for CrontabFile<T> {
                             err.lineno = lineno + 1;
                             err.line = Some(line.to_owned());
                             err
-                        }).map(crontab::ToCrontabEntry::to_crontab_entry)
+                        }).map(From::from)
                     });
                 },
                 Some((lineno, Err(e))) => {

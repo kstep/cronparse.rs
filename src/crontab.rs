@@ -7,10 +7,6 @@ use std::fmt::{self, Display, Formatter};
 
 use schedule::{Schedule, Period, Calendar, ScheduleParseError, PeriodParseError};
 
-pub trait ToCrontabEntry : FromStr<Err=CrontabEntryParseError> {
-    fn to_crontab_entry(self) -> CrontabEntry;
-}
-
 #[derive(Debug, PartialEq)]
 pub enum CrontabEntry {
     EnvVar(EnvVarEntry),
@@ -43,27 +39,27 @@ pub struct AnacrontabEntry {
     pub cmd: String
 }
 
-impl ToCrontabEntry for UserCrontabEntry {
-    fn to_crontab_entry(self) -> CrontabEntry {
-        CrontabEntry::User(self)
+impl From<UserCrontabEntry> for CrontabEntry {
+    fn from(entry: UserCrontabEntry) -> CrontabEntry {
+        CrontabEntry::User(entry)
     }
 }
 
-impl ToCrontabEntry for SystemCrontabEntry {
-    fn to_crontab_entry(self) -> CrontabEntry {
-        CrontabEntry::System(self)
+impl From<SystemCrontabEntry> for CrontabEntry {
+    fn from(entry: SystemCrontabEntry) -> CrontabEntry {
+        CrontabEntry::System(entry)
     }
 }
 
-impl ToCrontabEntry for AnacrontabEntry {
-    fn to_crontab_entry(self) -> CrontabEntry {
-        CrontabEntry::Anacron(self)
+impl From<AnacrontabEntry> for CrontabEntry {
+    fn from(entry: AnacrontabEntry) -> CrontabEntry {
+        CrontabEntry::Anacron(entry)
     }
 }
 
-impl ToCrontabEntry for EnvVarEntry {
-    fn to_crontab_entry(self) -> CrontabEntry {
-        CrontabEntry::EnvVar(self)
+impl From<EnvVarEntry> for CrontabEntry {
+    fn from(entry: EnvVarEntry) -> CrontabEntry {
+        CrontabEntry::EnvVar(entry)
     }
 }
 
