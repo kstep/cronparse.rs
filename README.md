@@ -20,7 +20,7 @@ use cronparse::crontab::UserCrontabEntry;
 use cronparse::CrontabFile;
 
 fn main() {
-    let mut crontab = CrontabFile::<UserCrontabEntry>::new("/var/spool/cron/kstep");
+    let crontab = CrontabFile::<UserCrontabEntry>::new("/var/spool/cron/kstep").unwrap();
     for entry in crontab {
         println!("{:?}", entry);
     }
